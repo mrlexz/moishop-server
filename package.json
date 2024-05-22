@@ -1,0 +1,39 @@
+{
+  "name": "apollo-gql-server",
+  "version": "1.0.0",
+  "description": "My New Project description.",
+  "scripts": {
+    "dev": "nodemon --watch \"*.ts\" --exec \"ts-node\" ./src/index.ts",
+    "build": "rimraf dist && tsc",
+    "start": "npm run build && node dist/index.js"
+  },
+  "repository": {
+    "url": "https://example.com/your-username/my-new-project",
+    "type": "git"
+  },
+  "author": "nguyenqui1011@gmail.com",
+  "license": "MIT",
+  "packageManager": "yarn@3.5.0",
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^20.12.2",
+    "nodemon": "^3.1.0",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.4.3"
+  },
+  "dependencies": {
+    "@apollo/server": "^4.10.2",
+    "@kinde-oss/kinde-node": "^0.0.3",
+    "@kinde-oss/kinde-node-express": "^1.4.1",
+    "apollo-server-express": "^3.13.0",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "graphql": "^16.8.1",
+    "graphql-iso-date": "^3.6.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.6.0",
+    "ts-node": "^10.9.2"
+  }
+}

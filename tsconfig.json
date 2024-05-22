@@ -1,0 +1,46 @@
+// {
+//   "compilerOptions": {
+//     "rootDirs": ["src", "src/**/*"],
+//     "outDir": "./build",
+//     "lib": ["es2020"],
+//     "target": "ES2022",
+//     "module": "NodeNext",
+//     "esModuleInterop": true,
+//     "types": ["node"],
+//     "skipLibCheck": true,
+//     "moduleResolution": "NodeNext"
+//   },
+//   "include": ["src", "index.ts"],
+//   "exclude": ["node_modules"]
+// }
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "nodenext",
+    "lib": ["dom", "es6", "esnext", "esnext.asynciterable"],
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "outDir": "./dist",
+    "moduleResolution": "nodenext",
+    "removeComments": true,
+    "noImplicitAny": false,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": false,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "baseUrl": "."
+  },
+  "ts-node": {
+    "esm": true
+  },
+  "exclude": ["node_modules", "dist"],
+  "include": ["./src/**/*.ts"]
+}
