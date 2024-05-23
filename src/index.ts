@@ -36,7 +36,7 @@ app.use(cors());
   try {
     await client.connect();
     console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
+      "👉 Pinged your deployment. You successfully connected to MongoDB!"
     );
     const db = client.db(process.env.DB_NAME!);
 
