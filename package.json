@@ -2,6 +2,9 @@
   "name": "apollo-gql-server",
   "version": "1.0.0",
   "description": "My New Project description.",
+  "engines": {
+    "node": "14.x"
+  },
   "scripts": {
     "dev": "nodemon --watch \"*.ts\" --exec \"ts-node\" ./src/index.ts",
     "build": "rimraf dist && tsc",
