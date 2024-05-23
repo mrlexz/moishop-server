@@ -22,6 +22,10 @@ const typeDefs = gql`
     billingAddress: BillingAddress
     billingAddressId: ID
   }
+  type CreateCheckoutSessionOutput {
+    order: Order
+    url: String
+  }
   type ShippingAddress {
     id: ID
     order: Order
@@ -54,17 +58,15 @@ const typeDefs = gql`
   }
   input CreateOrderInput {
     configurationId: ID!
-    userId: ID!
     amount: Float!
-    isPaid: Boolean!
-    orderStatus: OrderStatus
+    kindeUserId: ID
   }
   extend type Query {
     orders: [Order]
     order(id: ID!): Order
   }
   extend type Mutation {
-    createOrder(input: CreateOrderInput): Order
+    createCheckoutSession(input: CreateOrderInput): CreateCheckoutSessionOutput
   }
 `;
 export default typeDefs;
