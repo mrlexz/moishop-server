@@ -121,7 +121,7 @@ app.post(
             }
           );
 
-          await resend.emails.send({
+          const { data, error } = await resend.emails.send({
             from: "CaseMoiShop <admin@casemoishop.com>",
             to: [event.data.object.customer_details?.email],
             subject: "Thanks for your order! 🎉",
@@ -223,6 +223,8 @@ app.post(
 </html>
             `,
           });
+
+          console.log(data, error);
 
           break;
         default:
