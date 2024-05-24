@@ -1,17 +1,18 @@
 import { Db, ObjectId } from "mongodb";
 import { stripe } from "../lib/stripe.js";
+import Order from "../models/order.model.js";
+import User from "../models/user.model.js";
+import Configuration from "../models/configuration.model.js";
 
 export default {
   Query: {
-    orders: async (_, __, { db }: { db: Db }) => {
-      const orders = await db.collection("orders").find().toArray();
+    orders: async (_, __) => {
+      const orders = await Order.find();
       return orders;
     },
-    order: async (_, { id }, { db }) => {
+    order: async (_, { id }) => {
       try {
-        const order = await db
-          .collection("orders")
-          .findOne({ _id: new ObjectId(id) });
+        const order = await Order.findOne({ _id: new ObjectId(id) });
         if (!order) {
           return null;
         }
@@ -20,19 +21,51 @@ export default {
         return null;
       }
     },
+    paymentStatus: async (_, { orderId }, { kindeUserId }) => {
+      try {
+        const user = await User.findOne({
+          kindeUserId,
+        });
+
+        if (!user) {
+          throw new Error("You must to be logged in to continue.");
+        }
+
+        const order = await Order.findOne({ _id: new ObjectId(orderId) });
+        if (!order) {
+          return {
+            order: null,
+            status: false,
+          };
+        }
+        return {
+          order,
+          status: true,
+        };
+      } catch (error) {
+        return {
+          order: null,
+          status: false,
+        };
+      }
+    },
   },
   Mutation: {
-    async createCheckoutSession(_, { input }, { db }: { db: Db }) {
+    async createCheckoutSession(_, { input }) {
       try {
-        const currentUser = await db.collection("users").findOne({
+        const currentUser = await User.findOne({
           kindeUserId: input.kindeUserId,
         });
+        console.log(
+          "🚀 ~ createCheckoutSession ~ currentUser:",
+          currentUser?._id
+        );
 
         if (!currentUser) {
           throw new Error("You must to be logged in to create an order.");
         }
 
-        const configuration = await db.collection("configurations").findOne({
+        const configuration = await Configuration.findOne({
           _id: new ObjectId(input.configurationId),
         });
 
@@ -42,7 +75,7 @@ export default {
 
         let order = undefined;
 
-        const existingOrder = await db.collection("orders").findOne({
+        const existingOrder = await Order.findOne({
           userId: currentUser._id,
           configurationId: new ObjectId(input.configurationId),
         });
@@ -59,16 +92,19 @@ export default {
             createdAt: new Date(),
             updatedAt: new Date(),
           };
-          const result = await db.collection("orders").insertOne(newOrderInput);
+
+          const newOrder = new Order(newOrderInput);
+
+          const result = await newOrder.save();
+          console.log("🚀 ~ createCheckoutSession ~ result:", result);
+
           /* @ts-ignore */
-          order = await db
-            .collection("orders")
-            .findOne({ _id: result.insertedId });
+          order = await Order.findOne({ _id: result._id });
         }
 
         const product = await stripe.products.create({
           name: "Custom Iphone Case",
-          images: [configuration.imgUrl],
+          images: [configuration.imgUrl!],
           default_price_data: {
             currency: "usd",
             unit_amount: Math.round(input.amount) * 100,
@@ -106,11 +142,19 @@ export default {
   },
   Order: {
     id: (parent) => parent._id,
-  },
-  User: {
-    id: (parent) => {
-      console.log("🚀 ~ parent:", parent);
-      return parent._id;
+    user: async (parent) => {
+      try {
+        return await User.findOne({ _id: parent.userId });
+      } catch (error) {
+        return null;
+      }
+    },
+    configuration: async (parent) => {
+      try {
+        return await Configuration.findOne({ _id: parent.configurationId });
+      } catch (error) {
+        return null;
+      }
     },
   },
 };

@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "nodemon --watch \"*.ts\" --exec \"ts-node\" ./src/index.ts",
-    "build": "rimraf dist && tsc",
+    "build": "rimraf dist && tsc && node dist/src/index.js",
     "start": "npm run build && node dist/src/index.js"
   },
   "repository": {
@@ -20,12 +20,15 @@
   "type": "module",
   "devDependencies": {
     "@types/node": "^20.12.2",
+    "mongoose": "^8.4.0",
     "nodemon": "^3.1.0",
     "rimraf": "^5.0.5",
     "typescript": "^5.4.3"
   },
   "dependencies": {
     "@apollo/server": "^4.10.2",
+    "@graphql-tools/merge": "^9.0.4",
+    "@graphql-tools/schema": "^10.0.3",
     "@kinde-oss/kinde-node": "^0.0.3",
     "@kinde-oss/kinde-node-express": "^1.4.1",
     "apollo-server-express": "^3.13.0",

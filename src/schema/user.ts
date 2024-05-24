@@ -41,6 +41,7 @@ const typeDefs = gql`
   }
   extend type Query {
     getAuthStatus(input: AuthStatusInput): AuthStatus
+    users: [User]
   }
   extend type Mutation {
     signUp(input: SignUpInput): AuthUser

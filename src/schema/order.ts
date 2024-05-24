@@ -61,9 +61,14 @@ const typeDefs = gql`
     amount: Float!
     kindeUserId: ID
   }
+  type PaymentStatusOutput {
+    order: Order
+    status: Boolean
+  }
   extend type Query {
     orders: [Order]
     order(id: ID!): Order
+    paymentStatus(orderId: ID!): PaymentStatusOutput
   }
   extend type Mutation {
     createCheckoutSession(input: CreateOrderInput): CreateCheckoutSessionOutput

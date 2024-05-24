@@ -1,19 +1,17 @@
 import { Db, ObjectId } from "mongodb";
+import Configuration from "../models/configuration.model.js";
 
 export default {
   Query: {
-    configurations: async (_, __, { db }) => {
-      const configurations = await db
-        .collection("configurations")
-        .find()
-        .toArray();
+    configurations: async (_, __) => {
+      const configurations = await Configuration.find();
       return configurations;
     },
-    configuration: async (_, { id }, { db }) => {
+    configuration: async (_, { id }) => {
       try {
-        const configuration = await db
-          .collection("configurations")
-          .findOne({ _id: new ObjectId(id) });
+        const configuration = await Configuration.findOne({
+          _id: new ObjectId(id),
+        });
         if (!configuration) {
           return null;
         }
@@ -24,37 +22,33 @@ export default {
     },
   },
   Mutation: {
-    async createConfiguration(_, { input }, { db }) {
+    async createConfiguration(_, { input }) {
       try {
         const newInput = {
           ...input,
           createdAt: new Date(),
           updatedAt: new Date(),
         };
-        const result = await db
-          .collection("configurations")
-          .insertOne(newInput);
-        const configuration = await db
-          .collection("configurations")
-          .findOne({ _id: result.insertedId });
-        return { id: configuration._id };
+
+        const newOrder = new Configuration(newInput);
+        const result = await newOrder.save();
+
+        return { id: result._id };
       } catch (error) {
         return null;
       }
     },
-    async updateConfiguration(_, { input }, { db }: { db: Db }) {
+    async updateConfiguration(_, { input }) {
       try {
         const { id, ...update } = input;
         if (!id) {
           throw Error("id is required");
         }
-        const configuration = await db
-          .collection("configurations")
-          .findOneAndUpdate(
-            { _id: new ObjectId(id) },
-            { $set: update },
-            { returnDocument: "after" }
-          );
+        const configuration = await Configuration.findOneAndUpdate(
+          { _id: new ObjectId(id) },
+          { $set: update },
+          { returnDocument: "after" }
+        );
 
         if (!configuration) {
           return null;

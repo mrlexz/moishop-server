@@ -1,3 +1,4 @@
+import { mergeTypeDefs } from "@graphql-tools/merge";
 import userSchema from "./user.js";
 import testSchema from "./schema.js";
 import configurationSchema from "./configuration.js";
@@ -18,10 +19,10 @@ const rootSchema = gql`
   }
 `;
 
-export default [
+export default mergeTypeDefs([
   rootSchema,
   userSchema,
   testSchema,
   configurationSchema,
   orderSchema,
-];
+]);
