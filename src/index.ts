@@ -1,4 +1,5 @@
 import express from "express";
+import { Resend } from "resend";
 
 import { ApolloServer } from "apollo-server-express";
 import mergeTypeDefs from "./schema/index.js";
@@ -15,6 +16,7 @@ import Order from "./models/order.model.js";
 // import kindeNode from "@kinde-oss/kinde-node";
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET_KEY!;
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 dotenv.config();
 
@@ -69,7 +71,6 @@ app.post(
 
           const session = event.data.object as Stripe.Checkout.Session;
 
-          console.log("🚀 ~ session:", session);
           const { userId, orderId } = session.metadata || {
             userId: null,
             orderId: null,
@@ -119,6 +120,109 @@ app.post(
               updatedAt: new Date(),
             }
           );
+
+          await resend.emails.send({
+            from: "CaseMoiShop <admin@casemoishop.com>",
+            to: [event.data.object.customer_details?.email],
+            subject: "Thanks for your order! 🎉",
+            html: `
+            <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html dir="ltr" lang="en">
+
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+    <meta name="x-apple-disable-message-reformatting" />
+  </head>
+  <div style="display:none;overflow:hidden;line-height:1px;opacity:0;max-height:0;max-width:0">Your order summary and estimated delivery date<div> ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿</div>
+  </div>
+
+  <body style="background-color:#ffffff;font-family:-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Roboto,Oxygen-Sans,Ubuntu,Cantarell,&quot;Helvetica Neue&quot;,sans-serif">
+    <table align="center" width="100%" border="0" cellPadding="0" cellSpacing="0" role="presentation" style="max-width:100%;margin:10px auto;width:600px;border:1px solid #E5E5E5">
+      <tbody>
+        <tr style="width:100%">
+          <td>
+            <table align="center" width="100%" border="0" cellPadding="0" cellSpacing="0" role="presentation" style="padding:40px 74px;text-align:center">
+              <tbody>
+                <tr>
+                  <td><img alt="delivery snake" height="73" src="https://utfs.io/f/5a961d8e-b6b8-48f9-9913-011539c308be-m66lnh.png" style="display:block;outline:none;border:none;text-decoration:none;margin:auto" width="65" />
+                    <h1 style="font-size:32px;line-height:1.3;font-weight:700;text-align:center;letter-spacing:-1px">Thank you for your order!</h1>
+                    <p style="font-size:14px;line-height:2;margin:0;color:#747474;font-weight:500">We&#x27;re preparing everything for delivery and will notify you once your package has been shipped. Delivery usually takes 2 days.</p>
+                    <p style="font-size:14px;line-height:2;margin:0;color:#747474;font-weight:500;margin-top:24px">If you have any questions regarding your order, please feel free to contact us with your order number and we&#x27;re here to help.</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <hr style="width:100%;border:none;border-top:1px solid #eaeaea;border-color:#E5E5E5;margin:0" />
+            <table align="center" width="100%" border="0" cellPadding="0" cellSpacing="0" role="presentation" style="padding-left:40px;padding-right:40px;padding-top:22px;padding-bottom:22px">
+              <tbody>
+                <tr>
+                  <td>
+                    <p style="font-size:15px;line-height:2;margin:0;font-weight:bold">Shipping to:${
+                      newShippingData.name
+                    }</p>
+                    <p style="font-size:14px;line-height:2;margin:0;color:#747474;font-weight:500">${
+                      newShippingData.street
+                    }, ${newShippingData.city},{' '}
+                    ${newShippingData.state} ${newShippingData.postalCode}</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <hr style="width:100%;border:none;border-top:1px solid #eaeaea;border-color:#E5E5E5;margin:0" />
+            <table align="center" width="100%" border="0" cellPadding="0" cellSpacing="0" role="presentation" style="padding-left:40px;padding-right:40px;padding-top:22px;padding-bottom:22px">
+              <tbody>
+                <tr>
+                  <td>
+                    <table align="center" width="100%" border="0" cellPadding="0" cellSpacing="0" role="presentation" style="display:inline-flex gap-16;margin-bottom:40px">
+                      <tbody style="width:100%">
+                        <tr style="width:100%">
+                          <td data-id="__react-email-column" style="width:170px">
+                            <p style="font-size:14px;line-height:2;margin:0;font-weight:bold">Order Number</p>
+                            <p style="font-size:14px;line-height:1.4;margin:12px 0 0 0;font-weight:500;color:#6F6F6F">${orderId}</p>
+                          </td>
+                          <td data-id="__react-email-column" style="margin-left:20px">
+                            <p style="font-size:14px;line-height:2;margin:0;font-weight:bold">Order Date</p>
+                            <p style="font-size:14px;line-height:1.4;margin:12px 0 0 0;font-weight:500;color:#6F6F6F">${new Date().toDateString()}</p>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <hr style="width:100%;border:none;border-top:1px solid #eaeaea;border-color:#E5E5E5;margin:0" />
+            <table align="center" width="100%" border="0" cellPadding="0" cellSpacing="0" role="presentation" style="padding-top:22px;padding-bottom:22px">
+              <tbody>
+                <tr>
+                  <td>
+                    <table align="center" width="100%" border="0" cellPadding="0" cellSpacing="0" role="presentation">
+                      <tbody style="width:100%">
+                        <tr style="width:100%">
+                          <p style="font-size:13px;line-height:24px;margin:0;color:#AFAFAF;text-align:center;padding-top:30px;padding-bottom:30px">Please contact us if you have any questions. (If you reply to this email, we won&#x27;t be able to see it.)</p>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <table align="center" width="100%" border="0" cellPadding="0" cellSpacing="0" role="presentation">
+                      <tbody style="width:100%">
+                        <tr style="width:100%">
+                          <p style="font-size:13px;line-height:24px;margin:0;color:#AFAFAF;text-align:center">© CaseMoiShop, Inc. All Rights Reserved.</p>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+
+</html>
+            `,
+          });
 
           break;
         default:
