@@ -29,6 +29,10 @@ const app = express() as any;
 
 app.use(cors());
 
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
+
 app.post(
   "/webhook",
   express.raw({ type: "application/json" }),
