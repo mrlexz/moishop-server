@@ -3,6 +3,8 @@ import { stripe } from "../lib/stripe.js";
 import Order from "../models/order.model.js";
 import User from "../models/user.model.js";
 import Configuration from "../models/configuration.model.js";
+import BillingAddress from "../models/billingAddress.model.js";
+import ShippingAddress from "../models/shippingAddress.model.js";
 
 export default {
   Query: {
@@ -152,6 +154,22 @@ export default {
     configuration: async (parent) => {
       try {
         return await Configuration.findOne({ _id: parent.configurationId });
+      } catch (error) {
+        return null;
+      }
+    },
+    billingAddress: async (parent) => {
+      try {
+        return await BillingAddress.findOne({ _id: parent.billingAddressId });
+      } catch (error) {
+        return null;
+      }
+    },
+    shippingAddress: async (parent) => {
+      try {
+        return await ShippingAddress.findOne({
+          _id: parent.shippingAddressId,
+        });
       } catch (error) {
         return null;
       }
