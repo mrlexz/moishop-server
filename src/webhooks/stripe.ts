@@ -42,13 +42,12 @@ const buildHTLMThankYouEmail = (data: Record<string, string>) => {
                 <tbody>
                   <tr>
                     <td>
-                      <p style="font-size:15px;line-height:2;margin:0;font-weight:bold">Shipping to:${
+                      <p style="font-size:15px;line-height:2;margin:0;font-weight:bold">Shipping to: ${
                         data.name
                       }</p>
                       <p style="font-size:14px;line-height:2;margin:0;color:#747474;font-weight:500">${
                         data.street
-                      }, ${data.city},{' '}
-                      ${data.state} ${data.postalCode}</p>
+                      }, ${data.city}, ${data.state}, ${data.postalCode}</p>
                     </td>
                   </tr>
                 </tbody>
@@ -60,7 +59,7 @@ const buildHTLMThankYouEmail = (data: Record<string, string>) => {
                     <td>
                       <table align="center" width="100%" border="0" cellPadding="0" cellSpacing="0" role="presentation" style="display:inline-flex gap-16;margin-bottom:40px">
                         <tbody style="width:100%">
-                          <tr style="width:100%">
+                          <tr style="width:100%; display: flex;justify-content: space-between;">
                             <td data-id="__react-email-column" style="width:170px">
                               <p style="font-size:14px;line-height:2;margin:0;font-weight:bold">Order Number</p>
                               <p style="font-size:14px;line-height:1.4;margin:12px 0 0 0;font-weight:500;color:#6F6F6F">${
