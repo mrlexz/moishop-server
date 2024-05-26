@@ -203,7 +203,8 @@ export const paymentSuccess = async (request, response) => {
           }),
         });
 
-        console.log(data, error);
+        console.log("🚀 ~ paymentSuccess ~ data:", data);
+        console.log("🚀 ~ paymentSuccess ~ error:", error);
 
         break;
       default:
