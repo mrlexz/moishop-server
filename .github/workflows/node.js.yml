@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
-      - run: npm ci
+      - run: rm -rf node_modules && yarn install --frozen-lockfile
       - run: |
           touch .env
           echo "${{ secrets.MOISHOP_PROD_ENV }}" > .env
