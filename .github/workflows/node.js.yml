@@ -27,3 +27,5 @@ jobs:
       - run: |
           touch .env
           echo "${{ secrets.MOISHOP_PROD_ENV }}" > .env
+      - run: yarn build
+      - run: pm2 restart MoiShopServer

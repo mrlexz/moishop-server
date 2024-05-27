@@ -7,6 +7,7 @@ import { MongoClient, ServerApiVersion } from "mongodb";
 import cors from "cors";
 import { connectDB } from "./db/connect.js";
 import { paymentSuccess } from "./webhooks/stripe.js";
+import { sendEmail } from "./lib/awsSendEmail.js";
 
 dotenv.config();
 
@@ -34,21 +35,33 @@ app.post(
   paymentSuccess
 );
 
+app.get("/api/test-send-email", async (req, res) => {
+  try {
+    await sendEmail({
+      emailFrom: process.env.EMAIL_SENDER!,
+      emailTo: process.env.EMAIL_SENDER!,
+      subject: "Test email",
+      html: "<h1>Test email</h1>",
+    });
+    res.send("Email sent!");
+  } catch (err) {
+    console.log("🚀 ~ app.get ~ err:", err);
+    res.status(500).send("Error sending email");
+  }
+});
+
 (async () => {
   try {
+    console.log("💪💪💪 Connecting MongoDB Atlas cluster....");
+
     await connectDB();
-    await client.connect();
-    console.log(
-      "👉 Pinged your deployment. You successfully connected to MongoDB! 👈"
-    );
-    const db = client.db(process.env.DB_NAME!);
 
     const server = new ApolloServer({
       typeDefs: mergeTypeDefs,
       resolvers,
       context: async ({ req }) => {
         const kindeUserId = req.headers.kinde_user_id;
-        return { db, kindeUserId };
+        return { kindeUserId };
       },
     });
 

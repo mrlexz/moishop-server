@@ -5,6 +5,8 @@ import BillingAddress from "../models/billingAddress.model.js";
 import ShippingAddress from "../models/shippingAddress.model.js";
 import Order from "../models/order.model.js";
 import { sendEmail } from "../lib/sendEmail.js";
+import mustache from "mustache";
+// import thankYouEmail from "../templates/thankyouEmail.html";
 
 dotenv.config();
 
@@ -200,6 +202,7 @@ export const paymentSuccess = async (request, response) => {
             postalCode: newShippingAddress.postalCode ?? "",
             orderId: orderId,
           }),
+          // html: mustache.render()
         });
 
         console.log("🚀 ~ paymentSuccess ~ data:", data);
