@@ -6,9 +6,11 @@
     "node": "20.x"
   },
   "scripts": {
-    "dev": "nodemon --watch \"*.ts\" --exec \"ts-node\" ./src/index.ts",
-    "build": "rimraf dist && tsc",
-    "start": "npm run build && node dist/src/index.js"
+    "copy-graphql": "copyfiles -u 1 \"src/**/*.graphql\" dist/src",
+    "dev": "nodemon --watch src --exec node --no-warnings=ExperimentalWarning --loader ts-node/esm ./src/index.ts",
+    "build": "rimraf dist && tsc && npm run copy-graphql",
+    "start": "npm run build && node dist/src/index.js",
+    "codegen": "graphql-codegen"
   },
   "repository": {
     "url": "https://example.com/your-username/my-new-project",
@@ -19,18 +21,25 @@
   "packageManager": "yarn@3.5.0",
   "type": "module",
   "devDependencies": {
+    "@graphql-codegen/cli": "^5.0.2",
+    "@graphql-codegen/typescript": "^4.0.7",
+    "@graphql-codegen/typescript-mongodb": "^3.0.0",
+    "@graphql-codegen/typescript-resolvers": "^4.1.0",
     "@types/mustache": "^4.2.5",
-    "@types/node": "^20.12.2",
+    "@types/node": "^20.12.12",
+    "copyfiles": "^2.4.1",
+    "graphql-scalars": "^1.23.0",
     "mongoose": "^8.4.0",
-    "nodemon": "^3.1.0",
-    "rimraf": "^5.0.5",
-    "typescript": "^5.4.3"
+    "nodemon": "^3.1.1",
+    "rimraf": "^5.0.7",
+    "typescript": "^5.4.5"
   },
   "dependencies": {
-    "@apollo/server": "^4.10.2",
+    "@apollo/server": "^4.10.4",
     "@aws-sdk/client-ses": "^3.583.0",
+    "@graphql-tools/load-files": "^7.0.0",
     "@graphql-tools/merge": "^9.0.4",
-    "@graphql-tools/schema": "^10.0.3",
+    "@graphql-tools/schema": "^10.0.4",
     "@kinde-oss/kinde-node": "^0.0.3",
     "@kinde-oss/kinde-node-express": "^1.4.1",
     "apollo-server-express": "^3.13.0",
@@ -41,10 +50,10 @@
     "graphql": "^16.8.1",
     "graphql-iso-date": "^3.6.1",
     "jsonwebtoken": "^9.0.2",
-    "mongodb": "^6.6.0",
+    "mongodb": "^6.6.2",
     "mustache": "^4.2.0",
     "resend": "^3.2.0",
-    "stripe": "^15.7.0",
+    "stripe": "^15.8.0",
     "ts-node": "^10.9.2"
   }
 }

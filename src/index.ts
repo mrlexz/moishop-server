@@ -1,4 +1,5 @@
 import express from "express";
+import { DIRECTIVES } from "@graphql-codegen/typescript-mongodb";
 import { ApolloServer } from "apollo-server-express";
 import mergeTypeDefs from "./schema/index.js";
 import resolvers from "./resolvers/index.js";
@@ -57,7 +58,7 @@ app.get("/api/test-send-email", async (req, res) => {
     await connectDB();
 
     const server = new ApolloServer({
-      typeDefs: mergeTypeDefs,
+      typeDefs: [DIRECTIVES, mergeTypeDefs],
       resolvers,
       context: async ({ req }) => {
         const kindeUserId = req.headers.kinde_user_id;

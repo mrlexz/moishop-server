@@ -1,0 +1,74 @@
+scalar DateTime
+
+enum OrderStatus {
+  fullfilled
+  shipped
+  awaiting_shipment
+}
+type Order @entity {
+  id: ID @id
+  configurationId: ID @id
+  configuration: Configuration @link
+  userId: ID @id
+  user: User @link
+  amount: Float @column
+  isPaid: Boolean @column
+  orderStatus: OrderStatus @column
+  createdAt: DateTime @column
+  updatedAt: DateTime @column
+  shippingAddress: ShippingAddress @link
+  shippingAddressId: ID @id
+  billingAddress: BillingAddress @link
+  billingAddressId: ID @id
+}
+type CreateCheckoutSessionOutput {
+  order: Order
+  url: String
+}
+type ShippingAddress @entity {
+  id: ID @id
+  order: Order @link
+  orderId: ID @id
+  name: String @column
+  street: String @column
+  city: String @column
+  postalCode: String @column
+  country: String @column
+  state: String @column
+  phoneNumber: String @column
+  createdAt: DateTime @column
+  updatedAt: DateTime @column
+  orders: [Order] @link
+}
+type BillingAddress @entity {
+  id: ID @id
+  order: Order @link
+  orderId: ID @id
+  name: String @column
+  street: String @column
+  city: String @column
+  postalCode: String @column
+  country: String @column
+  state: String @column
+  phoneNumber: String @column
+  createdAt: DateTime @column
+  updatedAt: DateTime @column
+  orders: [Order] @link
+}
+input CreateOrderInput {
+  configurationId: ID!
+  amount: Float!
+  kindeUserId: ID
+}
+type PaymentStatusOutput {
+  order: Order
+  status: Boolean
+}
+extend type Query {
+  orders: [Order]
+  order(id: ID!): Order
+  paymentStatus(orderId: ID!): PaymentStatusOutput
+}
+extend type Mutation {
+  createCheckoutSession(input: CreateOrderInput): CreateCheckoutSessionOutput
+}

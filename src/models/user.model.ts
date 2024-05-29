@@ -13,9 +13,9 @@ const userSchema = new mongoose.Schema(
     },
     password: String,
     avatar: String,
-    orders: [
+    orderId: [
       {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
         ref: "Order",
       },
     ],

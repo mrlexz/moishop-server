@@ -1,13 +1,14 @@
-import { Db, ObjectId } from "mongodb";
+import { ObjectId } from "mongodb";
 import Configuration from "../models/configuration.model.js";
+import { QueryConfigurationArgs, Resolvers } from "../generated/graphql.js";
 
-export default {
+const resolvers: Resolvers = {
   Query: {
     configurations: async (_, __) => {
       const configurations = await Configuration.find();
       return configurations;
     },
-    configuration: async (_, { id }) => {
+    configuration: async (_, { id }: QueryConfigurationArgs) => {
       try {
         const configuration = await Configuration.findOne({
           _id: new ObjectId(id),
@@ -22,7 +23,7 @@ export default {
     },
   },
   Mutation: {
-    async createConfiguration(_, { input }) {
+    createConfiguration: async (_, { input }) => {
       try {
         const newInput = {
           ...input,
@@ -30,36 +31,51 @@ export default {
           updatedAt: new Date(),
         };
 
-        const newOrder = new Configuration(newInput);
-        const result = await newOrder.save();
+        const newConfiguration = new Configuration(newInput);
+        const result = await newConfiguration.save();
 
-        return { id: result._id };
+        return {
+          id: result._id.toString(),
+          height: result?.height,
+          width: result?.width,
+          imgUrl: result?.imgUrl,
+          croppedImgUrl: result?.croppedImgUrl,
+        };
       } catch (error) {
         return null;
       }
     },
-    async updateConfiguration(_, { input }) {
+    updateConfiguration: async (_, { input }) => {
       try {
-        const { id, ...update } = input;
-        if (!id) {
+        if (!input?.id) {
           throw Error("id is required");
         }
         const configuration = await Configuration.findOneAndUpdate(
-          { _id: new ObjectId(id) },
-          { $set: update },
+          { _id: new ObjectId(input.id) },
+          { $set: input },
           { returnDocument: "after" }
         );
 
         if (!configuration) {
           return null;
         }
-        return { ...configuration, id: configuration._id };
+        return {
+          id: configuration._id.toString(),
+          height: configuration?.height,
+          width: configuration?.width,
+          imgUrl: configuration?.imgUrl,
+          croppedImgUrl: configuration?.croppedImgUrl,
+        };
       } catch (error) {
         return null;
       }
     },
   },
   Configuration: {
-    id: (parent) => parent._id,
+    id: (parent) => {
+      return parent.id!;
+    },
   },
 };
+
+export default resolvers;

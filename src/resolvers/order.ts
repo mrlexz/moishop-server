@@ -5,8 +5,9 @@ import User from "../models/user.model.js";
 import Configuration from "../models/configuration.model.js";
 import BillingAddress from "../models/billingAddress.model.js";
 import ShippingAddress from "../models/shippingAddress.model.js";
+import { Resolvers } from "../generated/graphql.js";
 
-export default {
+const resolvers: Resolvers = {
   Query: {
     orders: async (_, __) => {
       const orders = await Order.find();
@@ -53,15 +54,14 @@ export default {
     },
   },
   Mutation: {
-    async createCheckoutSession(_, { input }) {
+    createCheckoutSession: async (_, { input }) => {
       try {
+        if (!input) {
+          throw new Error("Invalid createCheckoutSession input");
+        }
         const currentUser = await User.findOne({
           kindeUserId: input.kindeUserId,
         });
-        console.log(
-          "🚀 ~ createCheckoutSession ~ currentUser:",
-          currentUser?._id
-        );
 
         if (!currentUser) {
           throw new Error("You must to be logged in to create an order.");
@@ -98,8 +98,6 @@ export default {
           const newOrder = new Order(newOrderInput);
 
           const result = await newOrder.save();
-          console.log("🚀 ~ createCheckoutSession ~ result:", result);
-
           /* @ts-ignore */
           order = await Order.findOne({ _id: result._id });
         }
@@ -137,13 +135,12 @@ export default {
         /* @ts-ignore */
         return { order, url: session.url };
       } catch (error) {
-        console.log("🚀 ~ createCheckoutSession ~ error:", error);
         return null;
       }
     },
   },
   Order: {
-    id: (parent) => parent._id,
+    id: (parent) => parent.id!,
     user: async (parent) => {
       try {
         return await User.findOne({ _id: parent.userId });
@@ -176,3 +173,5 @@ export default {
     },
   },
 };
+
+export default resolvers;

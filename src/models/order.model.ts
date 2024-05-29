@@ -1,25 +1,28 @@
 import mongoose from "mongoose";
-import user from "src/resolvers/user.js";
+import { OrderStatus } from "./../generated/graphql.js";
 
 const orderModel = new mongoose.Schema(
   {
     configurationId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       ref: "Configuration",
     },
     userId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       ref: "User",
     },
     amount: Number,
     isPaid: Boolean,
-    orderStatus: String,
+    orderStatus: {
+      type: String,
+      enum: Object.values(OrderStatus),
+    },
     shippingAddressId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       ref: "ShippingAddress",
     },
     billingAddressId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       ref: "BillingAddress",
     },
     createdAt: {
