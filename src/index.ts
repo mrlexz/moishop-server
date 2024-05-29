@@ -4,7 +4,6 @@ import { ApolloServer } from "apollo-server-express";
 import mergeTypeDefs from "./schema/index.js";
 import resolvers from "./resolvers/index.js";
 import dotenv from "dotenv";
-import { MongoClient, ServerApiVersion } from "mongodb";
 import cors from "cors";
 import { connectDB } from "./db/connect.js";
 import { paymentSuccess } from "./webhooks/stripe.js";
@@ -12,22 +11,12 @@ import { sendEmail } from "./lib/awsSendEmail.js";
 
 dotenv.config();
 
-const uri = process.env.DB_URI!;
-
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  },
-});
-
 const app = express() as any;
 
 app.use(cors());
 
 app.get("/", (req, res) => {
-  res.send("Hello World! Welcome to my server!!!");
+  res.send("💋 Hello World! Welcome to my server!!!");
 });
 
 app.post(
