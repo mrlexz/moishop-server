@@ -8,6 +8,42 @@ import cors from "cors";
 import { connectDB } from "./db/connect.js";
 import { paymentSuccess } from "./webhooks/stripe.js";
 import { sendEmail } from "./lib/awsSendEmail.js";
+import { jwtDecode } from "jwt-decode";
+import jwt from "jsonwebtoken";
+import { applyMiddleware } from "graphql-middleware";
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import { IResolvers } from "graphql-middleware/types";
+import resolverMiddlewares from "./middlewares/index.js";
+import authMiddleWare from "./middlewares/authMiddleWare.js";
+import { GraphQLError } from "graphql";
+
+// const resolverAuthMiddleware = {
+//   Query: {
+//     getAuthStatus: async (resolve, parent, args, context, info) => {
+//       const { req } = context;
+
+//       if (!req.headers.authorization) {
+//         throw new GraphQLError("Authorize provided not valid", {
+//           extensions: { code: "TOKEN_NOT_VALID" },
+//         });
+//       }
+
+//       const token = req.headers.authorization.split(" ")[1];
+
+//       console.log(
+//         "🚀 ~ jwt.verify(token, process.env.JWT_SECRET):",
+//         jwt.verify(token, process.env.JWT_SECRET)
+//       );
+//       if (!jwt.verify(token, process.env.JWT_SECRET)) {
+//         throw new GraphQLError("Token is expired", {
+//           extensions: { code: "TOKEN_EXPIRED" },
+//         });
+//       }
+
+//       return await resolve(parent, args, context, info);
+//     },
+//   },
+// };
 
 dotenv.config();
 
@@ -46,13 +82,34 @@ app.get("/api/test-send-email", async (req, res) => {
 
     await connectDB();
 
+    const executableSchema = makeExecutableSchema({
+      typeDefs: [DIRECTIVES, mergeTypeDefs],
+      resolvers: resolvers as IResolvers<any, any> | IResolvers<any, any>[],
+    });
+    const schemaWithMiddleware = applyMiddleware(
+      executableSchema,
+      ...resolverMiddlewares
+    );
+
     const server = new ApolloServer({
       typeDefs: [DIRECTIVES, mergeTypeDefs],
       resolvers,
       context: async ({ req }) => {
-        const kindeUserId = req.headers.kinde_user_id;
-        return { kindeUserId };
+        const token = req.headers?.authorization
+          ? req.headers.authorization.split(" ")[1]
+          : null;
+        const decoded = token
+          ? jwtDecode<{ userId: string; email: string }>(token)
+          : {
+              userId: null,
+              email: null,
+            };
+        return {
+          req,
+          userId: decoded.userId ?? null,
+        };
       },
+      schema: schemaWithMiddleware, // add this property
     });
 
     await server.start();

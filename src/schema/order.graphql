@@ -58,7 +58,6 @@ type BillingAddress @entity {
 input CreateOrderInput {
   configurationId: ID!
   amount: Float!
-  kindeUserId: ID
 }
 type PaymentStatusOutput {
   order: Order

@@ -14,10 +14,12 @@ type User @entity {
 type AuthUser {
   user: User!
   access_token: String!
+  isNotHavePassword: Boolean
 }
 type AuthStatus {
   success: Boolean
   user: User
+  token: String
 }
 input KindeUser {
   id: String
@@ -31,9 +33,13 @@ input SignUpInput {
   password: String
   avatar: String
 }
+type SignUpOutput {
+  success: Boolean
+  message: String
+}
 input SignInInput {
   email: String!
-  password: String
+  password: String!
 }
 input AuthStatusInput {
   user: KindeUser
@@ -43,6 +49,6 @@ extend type Query {
   users: [User]
 }
 extend type Mutation {
-  signUp(input: SignUpInput): AuthUser
-  signIn(input: SignInInput): AuthUser
+  signUp(input: SignUpInput!): SignUpOutput
+  signIn(input: SignInInput!): AuthUser
 }

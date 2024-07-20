@@ -24,14 +24,18 @@ const resolvers: Resolvers = {
         return null;
       }
     },
-    paymentStatus: async (_, { orderId }, { kindeUserId }) => {
+    paymentStatus: async (_, { orderId }, { userId }) => {
       try {
+        if (!userId) {
+          throw new Error("You must to be logged in to continue.");
+        }
+
         const user = await User.findOne({
-          kindeUserId,
+          _id: new ObjectId(userId),
         });
 
         if (!user) {
-          throw new Error("You must to be logged in to continue.");
+          throw new Error("User not found");
         }
 
         const order = await Order.findOne({ _id: new ObjectId(orderId) });
@@ -54,13 +58,13 @@ const resolvers: Resolvers = {
     },
   },
   Mutation: {
-    createCheckoutSession: async (_, { input }) => {
+    createCheckoutSession: async (_, { input }, { userId }) => {
       try {
         if (!input) {
           throw new Error("Invalid createCheckoutSession input");
         }
         const currentUser = await User.findOne({
-          kindeUserId: input.kindeUserId,
+          _id: new ObjectId(userId),
         });
 
         if (!currentUser) {

@@ -21,6 +21,7 @@ export type Scalars = {
 export type AuthStatus = {
   __typename?: 'AuthStatus';
   success?: Maybe<Scalars['Boolean']['output']>;
+  token?: Maybe<Scalars['String']['output']>;
   user?: Maybe<User>;
 };
 
@@ -31,6 +32,7 @@ export type AuthStatusInput = {
 export type AuthUser = {
   __typename?: 'AuthUser';
   access_token: Scalars['String']['output'];
+  isNotHavePassword?: Maybe<Scalars['Boolean']['output']>;
   user: User;
 };
 
@@ -113,7 +115,6 @@ export type CreateConfigurationOutput = {
 export type CreateOrderInput = {
   amount: Scalars['Float']['input'];
   configurationId: Scalars['ID']['input'];
-  kindeUserId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type Game = {
@@ -136,7 +137,7 @@ export type Mutation = {
   createCheckoutSession?: Maybe<CreateCheckoutSessionOutput>;
   createConfiguration?: Maybe<CreateConfigurationOutput>;
   signIn?: Maybe<AuthUser>;
-  signUp?: Maybe<AuthUser>;
+  signUp?: Maybe<SignUpOutput>;
   updateConfiguration?: Maybe<CreateConfigurationOutput>;
 };
 
@@ -152,12 +153,12 @@ export type MutationCreateConfigurationArgs = {
 
 
 export type MutationSignInArgs = {
-  input?: InputMaybe<SignInInput>;
+  input: SignInInput;
 };
 
 
 export type MutationSignUpArgs = {
-  input?: InputMaybe<SignUpInput>;
+  input: SignUpInput;
 };
 
 
@@ -286,7 +287,7 @@ export type ShippingAddress = {
 
 export type SignInInput = {
   email: Scalars['String']['input'];
-  password?: InputMaybe<Scalars['String']['input']>;
+  password: Scalars['String']['input'];
 };
 
 export type SignUpInput = {
@@ -294,6 +295,12 @@ export type SignUpInput = {
   email: Scalars['String']['input'];
   name: Scalars['String']['input'];
   password?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type SignUpOutput = {
+  __typename?: 'SignUpOutput';
+  message?: Maybe<Scalars['String']['output']>;
+  success?: Maybe<Scalars['Boolean']['output']>;
 };
 
 export type Subscription = {
@@ -405,9 +412,9 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversTypes = {
   AuthStatus: ResolverTypeWrapper<AuthStatus>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
+  String: ResolverTypeWrapper<Scalars['String']['output']>;
   AuthStatusInput: AuthStatusInput;
   AuthUser: ResolverTypeWrapper<AuthUser>;
-  String: ResolverTypeWrapper<Scalars['String']['output']>;
   Author: ResolverTypeWrapper<Author>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   BillingAddress: ResolverTypeWrapper<BillingAddress>;
@@ -434,6 +441,7 @@ export type ResolversTypes = {
   ShippingAddress: ResolverTypeWrapper<ShippingAddress>;
   SignInInput: SignInInput;
   SignUpInput: SignUpInput;
+  SignUpOutput: ResolverTypeWrapper<SignUpOutput>;
   Subscription: ResolverTypeWrapper<{}>;
   UpdateConfigurationInput: UpdateConfigurationInput;
   User: ResolverTypeWrapper<User>;
@@ -444,9 +452,9 @@ export type ResolversTypes = {
 export type ResolversParentTypes = {
   AuthStatus: AuthStatus;
   Boolean: Scalars['Boolean']['output'];
+  String: Scalars['String']['output'];
   AuthStatusInput: AuthStatusInput;
   AuthUser: AuthUser;
-  String: Scalars['String']['output'];
   Author: Author;
   ID: Scalars['ID']['output'];
   BillingAddress: BillingAddress;
@@ -468,6 +476,7 @@ export type ResolversParentTypes = {
   ShippingAddress: ShippingAddress;
   SignInInput: SignInInput;
   SignUpInput: SignUpInput;
+  SignUpOutput: SignUpOutput;
   Subscription: {};
   UpdateConfigurationInput: UpdateConfigurationInput;
   User: User;
@@ -523,12 +532,14 @@ export type MapDirectiveResolver<Result, Parent, ContextType = DataContext, Args
 
 export type AuthStatusResolvers<ContextType = DataContext, ParentType extends ResolversParentTypes['AuthStatus'] = ResolversParentTypes['AuthStatus']> = {
   success?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type AuthUserResolvers<ContextType = DataContext, ParentType extends ResolversParentTypes['AuthUser'] = ResolversParentTypes['AuthUser']> = {
   access_token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  isNotHavePassword?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -601,8 +612,8 @@ export type MutationResolvers<ContextType = DataContext, ParentType extends Reso
   _?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   createCheckoutSession?: Resolver<Maybe<ResolversTypes['CreateCheckoutSessionOutput']>, ParentType, ContextType, Partial<MutationCreateCheckoutSessionArgs>>;
   createConfiguration?: Resolver<Maybe<ResolversTypes['CreateConfigurationOutput']>, ParentType, ContextType, Partial<MutationCreateConfigurationArgs>>;
-  signIn?: Resolver<Maybe<ResolversTypes['AuthUser']>, ParentType, ContextType, Partial<MutationSignInArgs>>;
-  signUp?: Resolver<Maybe<ResolversTypes['AuthUser']>, ParentType, ContextType, Partial<MutationSignUpArgs>>;
+  signIn?: Resolver<Maybe<ResolversTypes['AuthUser']>, ParentType, ContextType, RequireFields<MutationSignInArgs, 'input'>>;
+  signUp?: Resolver<Maybe<ResolversTypes['SignUpOutput']>, ParentType, ContextType, RequireFields<MutationSignUpArgs, 'input'>>;
   updateConfiguration?: Resolver<Maybe<ResolversTypes['CreateConfigurationOutput']>, ParentType, ContextType, Partial<MutationUpdateConfigurationArgs>>;
 };
 
@@ -669,6 +680,12 @@ export type ShippingAddressResolvers<ContextType = DataContext, ParentType exten
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type SignUpOutputResolvers<ContextType = DataContext, ParentType extends ResolversParentTypes['SignUpOutput'] = ResolversParentTypes['SignUpOutput']> = {
+  message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  success?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type SubscriptionResolvers<ContextType = DataContext, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
   _?: SubscriptionResolver<Maybe<ResolversTypes['Boolean']>, "_", ParentType, ContextType>;
 };
@@ -702,6 +719,7 @@ export type Resolvers<ContextType = DataContext> = {
   Query?: QueryResolvers<ContextType>;
   Review?: ReviewResolvers<ContextType>;
   ShippingAddress?: ShippingAddressResolvers<ContextType>;
+  SignUpOutput?: SignUpOutputResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
 };
