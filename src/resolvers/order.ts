@@ -142,6 +142,79 @@ const resolvers: Resolvers = {
         return null;
       }
     },
+    createAppPayment: async (_, { input }, { userId }) => {
+      try {
+        if (!input?.amount) {
+          throw new Error("Invalid createAppPayment amount");
+        }
+        const currentUser = await User.findOne({
+          _id: new ObjectId(userId),
+        });
+
+        if (!currentUser) {
+          throw new Error("You must to be logged in to create an order.");
+        }
+
+        const configuration = await Configuration.findOne({
+          _id: new ObjectId(input.configurationId),
+        });
+
+        if (!configuration) {
+          throw new Error("Configuration not found.");
+        }
+
+        let order = undefined;
+
+        const existingOrder = await Order.findOne({
+          userId: currentUser._id,
+          configurationId: new ObjectId(input.configurationId),
+        });
+        if (existingOrder) {
+          /* @ts-ignore */
+          order = existingOrder;
+        } else {
+          const newOrderInput = {
+            configurationId: new ObjectId(input.configurationId),
+            userId: currentUser._id,
+            amount: input.amount,
+            isPaid: false,
+            orderStatus: "awaiting_shipment",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          };
+
+          const newOrder = new Order(newOrderInput);
+
+          const result = await newOrder.save();
+          /* @ts-ignore */
+          order = await Order.findOne({ _id: result._id });
+        }
+
+        const paymentIntent = await stripe.paymentIntents.create({
+          amount: Math.round(input.amount) * 100,
+          currency: "usd",
+          automatic_payment_methods: {
+            enabled: true,
+          },
+          metadata: {
+            /* @ts-ignore */
+            orderId: order?._id?.toString(),
+            userId: currentUser._id.toString(),
+          },
+        });
+
+        return {
+          paymentIntent: paymentIntent.client_secret,
+          /* @ts-ignore */
+          orderId: order?._id?.toString(),
+        };
+      } catch (error) {
+        console.log("🚀 ~ createAppPayment: ~ error:", error);
+        return {
+          paymentIntent: null,
+        };
+      }
+    },
   },
   Order: {
     id: (parent) => parent.id!,

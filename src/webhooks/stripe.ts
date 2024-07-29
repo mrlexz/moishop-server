@@ -209,6 +209,66 @@ export const paymentSuccess = async (request, response) => {
         console.log("🚀 ~ paymentSuccess ~ error:", error);
 
         break;
+      case "payment_intent.succeeded":
+        // if (!event.data.object.customer_details?.email) {
+        //   throw new Error("Email is not defined");
+        // }
+
+        const session2 = event.data.object as Stripe.PaymentIntent;
+
+        const {
+          userId: payment_intent_userId,
+          orderId: payment_intent_orderId,
+        } = session2.metadata || {
+          userId: null,
+          orderId: null,
+        };
+
+        if (!payment_intent_userId || !payment_intent_orderId) {
+          throw new Error("User or Order Id is not defined");
+        }
+
+        const billingAddressPI = {};
+        const shippingAddressPI = {};
+
+        const newBillingAddressPI = new BillingAddress({
+          name: "session.customer_details!.name",
+          city: "billingAddressPI!.city",
+          country: "billingAddressPI!.country",
+          street: "billingAddressPI!.line1",
+          postalCode: "billingAddressPI!.postal_code",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          state: "billingAddressPI!.state",
+        });
+
+        const newBillingDataPI = await newBillingAddressPI.save();
+
+        const newShippingAddressPI = new ShippingAddress({
+          name: "session.customer_details!.name",
+          city: "shippingAddress!.city",
+          country: "shippingAddress!.country",
+          street: "shippingAddress!.line1",
+          postalCode: "shippingAddress!.postal_code",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          state: "shippingAddress!.state",
+        });
+
+        const newShippingDataPI = await newShippingAddressPI.save();
+
+        await Order.findOneAndUpdate(
+          {
+            _id: payment_intent_orderId,
+          },
+          {
+            isPaid: true,
+            billingAddressId: newBillingDataPI._id,
+            shippingAddressId: newShippingDataPI._id,
+            updatedAt: new Date(),
+          }
+        );
+        break;
       default:
         console.log(`Unhandled event type ${event.type}`);
     }

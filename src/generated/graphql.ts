@@ -90,6 +90,12 @@ export type Configuration = {
   width?: Maybe<Scalars['Int']['output']>;
 };
 
+export type CreateAppPaymentOutput = {
+  __typename?: 'CreateAppPaymentOutput';
+  orderId?: Maybe<Scalars['ID']['output']>;
+  paymentIntent?: Maybe<Scalars['String']['output']>;
+};
+
 export type CreateCheckoutSessionOutput = {
   __typename?: 'CreateCheckoutSessionOutput';
   order?: Maybe<Order>;
@@ -134,11 +140,17 @@ export type KindeUser = {
 export type Mutation = {
   __typename?: 'Mutation';
   _?: Maybe<Scalars['Boolean']['output']>;
+  createAppPayment?: Maybe<CreateAppPaymentOutput>;
   createCheckoutSession?: Maybe<CreateCheckoutSessionOutput>;
   createConfiguration?: Maybe<CreateConfigurationOutput>;
   signIn?: Maybe<AuthUser>;
   signUp?: Maybe<SignUpOutput>;
   updateConfiguration?: Maybe<CreateConfigurationOutput>;
+};
+
+
+export type MutationCreateAppPaymentArgs = {
+  input?: InputMaybe<CreateOrderInput>;
 };
 
 
@@ -423,6 +435,7 @@ export type ResolversTypes = {
   CaseMaterial: CaseMaterial;
   Configuration: ResolverTypeWrapper<Configuration>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
+  CreateAppPaymentOutput: ResolverTypeWrapper<CreateAppPaymentOutput>;
   CreateCheckoutSessionOutput: ResolverTypeWrapper<CreateCheckoutSessionOutput>;
   CreateConfigurationInput: CreateConfigurationInput;
   CreateConfigurationOutput: ResolverTypeWrapper<CreateConfigurationOutput>;
@@ -460,6 +473,7 @@ export type ResolversParentTypes = {
   BillingAddress: BillingAddress;
   Configuration: Configuration;
   Int: Scalars['Int']['output'];
+  CreateAppPaymentOutput: CreateAppPaymentOutput;
   CreateCheckoutSessionOutput: CreateCheckoutSessionOutput;
   CreateConfigurationInput: CreateConfigurationInput;
   CreateConfigurationOutput: CreateConfigurationOutput;
@@ -582,6 +596,12 @@ export type ConfigurationResolvers<ContextType = DataContext, ParentType extends
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type CreateAppPaymentOutputResolvers<ContextType = DataContext, ParentType extends ResolversParentTypes['CreateAppPaymentOutput'] = ResolversParentTypes['CreateAppPaymentOutput']> = {
+  orderId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  paymentIntent?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type CreateCheckoutSessionOutputResolvers<ContextType = DataContext, ParentType extends ResolversParentTypes['CreateCheckoutSessionOutput'] = ResolversParentTypes['CreateCheckoutSessionOutput']> = {
   order?: Resolver<Maybe<ResolversTypes['Order']>, ParentType, ContextType>;
   url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -610,6 +630,7 @@ export type GameResolvers<ContextType = DataContext, ParentType extends Resolver
 
 export type MutationResolvers<ContextType = DataContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   _?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  createAppPayment?: Resolver<Maybe<ResolversTypes['CreateAppPaymentOutput']>, ParentType, ContextType, Partial<MutationCreateAppPaymentArgs>>;
   createCheckoutSession?: Resolver<Maybe<ResolversTypes['CreateCheckoutSessionOutput']>, ParentType, ContextType, Partial<MutationCreateCheckoutSessionArgs>>;
   createConfiguration?: Resolver<Maybe<ResolversTypes['CreateConfigurationOutput']>, ParentType, ContextType, Partial<MutationCreateConfigurationArgs>>;
   signIn?: Resolver<Maybe<ResolversTypes['AuthUser']>, ParentType, ContextType, RequireFields<MutationSignInArgs, 'input'>>;
@@ -709,6 +730,7 @@ export type Resolvers<ContextType = DataContext> = {
   Author?: AuthorResolvers<ContextType>;
   BillingAddress?: BillingAddressResolvers<ContextType>;
   Configuration?: ConfigurationResolvers<ContextType>;
+  CreateAppPaymentOutput?: CreateAppPaymentOutputResolvers<ContextType>;
   CreateCheckoutSessionOutput?: CreateCheckoutSessionOutputResolvers<ContextType>;
   CreateConfigurationOutput?: CreateConfigurationOutputResolvers<ContextType>;
   DateTime?: GraphQLScalarType;

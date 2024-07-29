@@ -25,6 +25,11 @@ type CreateCheckoutSessionOutput {
   order: Order
   url: String
 }
+
+type CreateAppPaymentOutput {
+  paymentIntent: String
+  orderId: ID
+}
 type ShippingAddress @entity {
   id: ID @id
   order: Order @link
@@ -70,4 +75,5 @@ extend type Query {
 }
 extend type Mutation {
   createCheckoutSession(input: CreateOrderInput): CreateCheckoutSessionOutput
+  createAppPayment(input: CreateOrderInput): CreateAppPaymentOutput
 }
